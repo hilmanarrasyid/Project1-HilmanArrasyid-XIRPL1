@@ -31,4 +31,7 @@ public class DaftarMenu {
         getMenuByKategori("Toping");
         getMenuByKategori("Minuman");
     }
+
+    public void tambahMenu(Ramen ramen_seafood) {
+    }
 }

@@ -6,7 +6,7 @@ public class Menu {
     private double harga;
     private String kategori;
 
-    public String getNama_menu(){
+    public String getNama_Menu(){
         return nama_menu;
     }
 
