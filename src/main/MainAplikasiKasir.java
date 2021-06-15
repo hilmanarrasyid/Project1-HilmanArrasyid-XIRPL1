@@ -11,8 +11,21 @@ public class MainAplikasiKasir {
     public DaftarMenu daftarMenu;
     //Tambahakan
     public static double PAJAK_PPN = 0.10;
-    public static double BiAYA_SERVICE = 0.05;
+    public static double BIAYA_SERVICE = 0.05;
     //End of Tambahkan
+
+    public double cekInputNumber(String label) {
+        try {
+            Scanner get_input = new Scanner(System.in);
+            System.out.print(label);
+            double nilai = get_input.nextDouble();
+
+            return nilai;
+        } catch (InputMismatchException ex) {
+            System.out.println("[Err] Harap masukan angka");
+            return cekInputNumber(label);
+        }
+    }
 
     public static void main(String[] args) {
         //init
@@ -60,7 +73,7 @@ public class MainAplikasiKasir {
             trans.tambahPesanan(pesanan);
 
             //khusus untuk menu ramen, pesanan kuahnya langsung diinput juga
-            if (menu_yang_dipilih.getKategori().equals("Ramen")){
+            if (menu_yang_dipilih.getKategori().equals("Ramen")) {
                 //looping sesuai dengan jumlah pesanan ramen
                 int jumlah_ramen = jumlah_pesanan;
                 do {
@@ -80,7 +93,7 @@ public class MainAplikasiKasir {
                         } else {
                             break;
                         }
-                    }while (jumlah_kuah > jumlah_ramen);
+                    } while (jumlah_kuah > jumlah_ramen);
 
                     //set pesanan kuah
                     Pesanan pesanan_kuah = new Pesanan(kuah_yang_dipilih, jumlah_kuah);
@@ -91,7 +104,7 @@ public class MainAplikasiKasir {
 
                     //hitung jumlah rmaen yang belum dipesan kuahnya
                     jumlah_ramen -= jumlah_kuah;
-                }while (jumlah_ramen > 0);
+                } while (jumlah_ramen > 0);
 
             } else {
                 //jika keterangan tidak diisi tulis -
@@ -99,7 +112,7 @@ public class MainAplikasiKasir {
                 keterangan = input.next();
             }
             //cek jika keterangan diisi selain "-" set ke pesanan
-            if (!keterangan.equals("-")){
+            if (!keterangan.equals("-")) {
                 pesanan.setKeterangan(keterangan);
             }
 
@@ -107,6 +120,46 @@ public class MainAplikasiKasir {
             System.out.print("Tambah Pesanan Lagi? [Y/N] : ");
             pesan_lagi = input.next();
         } while (pesan_lagi.equalsIgnoreCase("Y"));
+
+        //cetak struk
+        trans.cetakStruk();
+
+        //hitung total harga
+        double totalPemesanan = trans.hitungTotalPesanan();
+        System.out.println("-------------------------------");
+        System.out.println("Total : \t\t" + totalPemesanan);
+
+        //hitung pajak
+        //jika makan ditempat, maka biaya pajak = 10% ppn + 5% service
+        trans.setPajak(PAJAK_PPN);
+        double ppn = trans.hitungPajak();
+        System.out.println("Pajak 10% : \t\t" + ppn);
+
+        double biaya_service = 0;
+        if (makan_ditempat.equalsIgnoreCase("y")) {
+            trans.setBiayaService(BIAYA_SERVICE);
+            biaya_service = trans.hitungBiayaService();
+            System.out.println("Service 5% : \t\t" + biaya_service);
+        }
+
+        //tampilkan total bayar
+        System.out.println("Total : \t\t" + trans.hitungTotalBayar(ppn, biaya_service));
+
+        //cek uang bayar , apakah > total bayar atau tidak
+        double kembalian = 0;
+        do {
+            //ambil input uang bayar
+            double uangBayar = app.cekInputNumber("Uang Bayar : \t\t");
+            kembalian = trans.hitungKembalian(uangBayar);
+            if (kembalian < 0) {
+                System.out.println("Uang anda kurang");
+            } else {
+                System.out.println("Kembalian : \t\t" + kembalian);
+                break;
+            }
+        } while (kembalian < 0);
+
+        System.out.println("========== TERIMA KASIH ==========");
     }
 
     public void generateDaftarMenu() {
@@ -130,17 +183,5 @@ public class MainAplikasiKasir {
         daftarMenu.tambahMenu(new Minuman("Vietnam Dripp", 14000));
 
         daftarMenu.tampilDaftarMenu();
-    }
-    public double cekInputNumber(String label){
-        try{
-            Scanner get_input = new Scanner(System.in);
-            System.out.print(label);
-            double nilai = get_input.nextDouble();
-
-            return nilai;
-        } catch (InputMismatchException ex){
-            System.out.println("[Err] Harap masukan angka");
-            return cekInputNumber(label);
-        }
     }
 }
